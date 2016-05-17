@@ -1,4 +1,4 @@
-package net.deusaquilus.tableprinter.results.impl.basic;
+package net.deusaquilus.tableprinter.results.impl;
 
 import java.util.Collection;
 import java.util.Iterator;

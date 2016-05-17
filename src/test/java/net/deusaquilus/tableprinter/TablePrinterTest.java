@@ -7,7 +7,7 @@ import java.util.Arrays;
 
 import junit.framework.Assert;
 import net.deusaquilus.tableprinter.results.impl.RowSetMem;
-import net.deusaquilus.tableprinter.results.impl.basic.ListRowSet;
+import net.deusaquilus.tableprinter.results.impl.ListRowSet;
 
 import org.junit.Test;
 
