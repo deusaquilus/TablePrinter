@@ -51,7 +51,7 @@ public class TablePrinterTest {
 	}
 
 	@Test
-	public void testColWidthsMeasurementEmpty2() {
+	public void testColWidthsLonger() {
 		@SuppressWarnings("unchecked")
 		List<String> vars = Arrays.asList("bbbb", "bbbbb", "bbbbbb");
 		ListRowSet<String> resultSet = ListRowSet.construct(
@@ -148,7 +148,6 @@ public class TablePrinterTest {
 				"----------------------"
 		};
 
-		@SuppressWarnings("unchecked")
 		List<String> vars = Arrays.asList("Col1", "Col2", "Col3");
 		ListRowSet<String> resultSet = ListRowSet.construct(
 				vars,
@@ -164,6 +163,118 @@ public class TablePrinterTest {
 		tablePrinter.writeSomeMore(writer, SingletonRowSet.construct(vars, "cc", "c", "c"));
 		tablePrinter.writeSomeMore(writer, SingletonRowSet.construct(vars, "dd", "d", "d"));
 		tablePrinter.finishWriting(writer);
+		writer.flush();
+
+		assertSame(expectedStringArr, outputStream.toString());
+	}
+
+
+	@Test
+	public void testIdiomaticForLoopPrintWithWrap() {
+
+		String[] expectedStringArr = new String[]{
+				"----------------------",
+				"| Col1 | Col2 | Col3 |",
+				"======================",
+				"| a    | aa   | aaa  |",
+				"| b    | b    | b    |",
+				"| cc   | c    | c    |",
+				"| dd   | d    | dddd |",
+				"|      |      | d    |",
+				"| ee   | e    | e    |",
+				"----------------------"
+		};
+
+		List<String> vars = Arrays.asList("Col1", "Col2", "Col3");
+		ListRowSet<String> resultSet = ListRowSet.construct(
+				vars,
+				new ListRow<String>(vars, "a", "aa", "aaa"),
+				new ListRow<String>(vars, "b", "b", "b"));
+
+		TablePrinter<String> tablePrinter = new TablePrinter<String>();
+
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		PrintWriter writer = new PrintWriter(outputStream);
+
+		tablePrinter.startWriting(writer, resultSet);
+		tablePrinter.writeSomeMore(writer, SingletonRowSet.construct(vars, "cc", "c", "c"));
+		tablePrinter.writeSomeMore(writer, SingletonRowSet.construct(vars, "dd", "d", "ddddd"));
+		tablePrinter.writeSomeMore(writer, SingletonRowSet.construct(vars, "ee", "e", "e"));
+		tablePrinter.finishWriting(writer);
+		writer.flush();
+
+		assertSame(expectedStringArr, outputStream.toString());
+	}
+
+	@Test
+	public void testRegularPrintWithWrap() {
+
+		String[] expectedStringArr = new String[]{
+				"----------------------",
+				"| Col1 | Col2 | Col3 |",
+				"======================",
+				"| a    | aa   | aaa  |",
+				"| b    | b    | b    |",
+				"| cc   | c    | c    |",
+				"| dd   | d    | dddd |",
+				"|      |      | d    |",
+				"| ee   | e    | e    |",
+				"----------------------"
+		};
+
+		List<String> vars = Arrays.asList("Col1", "Col2", "Col3");
+		ListRowSet<String> resultSet = ListRowSet.construct(
+				vars,
+				new ListRow<String>(vars, "a", "aa", "aaa"),
+				new ListRow<String>(vars, "b", "b", "b"),
+				new ListRow<String>(vars, "cc", "c", "c"),
+				new ListRow<String>(vars, "dd", "d", "ddddd"),
+				new ListRow<String>(vars, "ee", "e", "e")
+				);
+
+		TablePrinterConfig config = new TablePrinterConfig();
+		config.measuringRows = 1;
+		TablePrinter<String> tablePrinter = new TablePrinter<String>(config);
+
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		PrintWriter writer = new PrintWriter(outputStream);
+
+		tablePrinter.writeAll(writer, resultSet);
+		writer.flush();
+
+		assertSame(expectedStringArr, outputStream.toString());
+	}
+
+	@Test
+	public void testRegularPrintWithMultipleWrap() {
+
+		String[] expectedStringArr = new String[]{
+				"----------------------",
+				"| Col1 | Col2 | Col3 |",
+				"======================",
+				"| a    | a    | a    |",
+				"| dd   | dddd | dddd |",
+				"|      | dd   | d    |",
+				"| ee   | e    | e    |",
+				"----------------------"
+		};
+
+		List<String> vars = Arrays.asList("Col1", "Col2", "Col3");
+		ListRowSet<String> resultSet = ListRowSet.construct(
+				vars,
+				new ListRow<String>(vars, "a", "a", "a"),
+				new ListRow<String>(vars, "dd", "dddddd", "ddddd"),
+				new ListRow<String>(vars, "ee", "e", "e")
+		);
+
+		TablePrinterConfig config = new TablePrinterConfig();
+		config.measuringRows = 1;
+		TablePrinter<String> tablePrinter = new TablePrinter<String>(config);
+
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		PrintWriter writer = new PrintWriter(outputStream);
+
+		tablePrinter.writeAll(writer, resultSet);
 		writer.flush();
 
 		assertSame(expectedStringArr, outputStream.toString());

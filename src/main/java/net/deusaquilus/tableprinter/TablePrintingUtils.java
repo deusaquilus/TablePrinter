@@ -4,6 +4,7 @@ import java.io.PrintWriter;
 import java.util.Collection;
 import java.util.Iterator;
 
+import com.hp.hpl.jena.reasoner.rulesys.builtins.Print;
 import net.deusaquilus.tableprinter.results.Row;
 import net.deusaquilus.tableprinter.results.RowSet;
 import net.deusaquilus.tableprinter.results.RowSetRewindable;
@@ -50,14 +51,18 @@ public class TablePrintingUtils {
     		TablePrinterConfig config,
     		int[] colWidths) {
 
-        for ( int i = 0 ; i < lineWidth ; i++ ) pw.print('-') ;
+		printLineDivider(pw, lineWidth, '-');
         pw.println();
 
         printRow(pw, headingRow, config, colWidths) ;
 
-        for ( int i = 0 ; i < lineWidth ; i++ ) pw.print('=') ;
+		printLineDivider(pw, lineWidth, '=');
         pw.println();
     }
+
+	public static void printLineDivider(PrintWriter pw, int lineWidth, char unit) {
+		for (int i = 0; i < lineWidth; i++) pw.print(unit);
+	}
 
 	public static String[] buildHeadingRow(Collection<String> allVars) {
     	String[] headingRow = new String[allVars.size()];

@@ -17,6 +17,12 @@ public class TablePrinter<T> {
 
     private int lineWidth;
 
+    public TablePrinter() {
+    }
+
+    public TablePrinter(TablePrinterConfig config) {
+        this.config = config;
+    }
 
     private RowSetRewindable<T> computeWidthsAndConsumeResults(RowSetRewindable<T> rewindableSlice) {
     	this.colWidths = TablePrintingUtils.measureColWidths(rewindableSlice, config, valuePrinter);
