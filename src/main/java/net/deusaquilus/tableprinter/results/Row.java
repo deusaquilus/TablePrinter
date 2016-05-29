@@ -1,5 +1,6 @@
 package net.deusaquilus.tableprinter.results;
 
+import java.util.Collection;
 import java.util.Iterator;
 
 /**
@@ -10,16 +11,17 @@ import java.util.Iterator;
  */
 public interface Row<T>
 {
-	public boolean isDense();
+	boolean isDense();
 
-    public T get(String varName);
+    T get(String varName);
 
-    public boolean contains(String varName);
+    boolean contains(String varName);
 
     /**
      * The most performant API, clients should prefer using this
      * @return
      */
-    public Iterator<T> values();
+    Iterator<T> values();
 
+    Collection<String> getResultVars();
 }

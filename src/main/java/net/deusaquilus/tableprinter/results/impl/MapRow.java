@@ -1,5 +1,6 @@
 package net.deusaquilus.tableprinter.results.impl;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -28,6 +29,10 @@ public class MapRow<T> implements Row<T> {
 
 	public Iterator<T> values() {
 		return results.values().iterator();
+	}
+
+	public Collection<String> getResultVars() {
+		return results.keySet();
 	}
 
 }

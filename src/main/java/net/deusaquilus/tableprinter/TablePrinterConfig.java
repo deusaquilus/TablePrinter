@@ -17,4 +17,5 @@ public class TablePrinterConfig {
 	public int defaultBufferSize = 120;
 
 	public boolean printHeaders = true;
+	public long asyncSleepTime = 100;
 }

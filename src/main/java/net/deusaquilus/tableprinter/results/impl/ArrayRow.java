@@ -84,4 +84,7 @@ public class ArrayRow<T> implements Row<T>, Iterator<T> {
 		throw new NotImplementedException();
 	}
 
+	public Collection<String> getResultVars() {
+		return vars;
+	}
 }

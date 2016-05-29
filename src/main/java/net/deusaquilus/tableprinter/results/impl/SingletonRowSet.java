@@ -12,6 +12,11 @@ public class SingletonRowSet<T> implements RowSet<T> {
 	private Collection<String> resultVars;
 	private boolean done = false;
 
+	public SingletonRowSet(Row<T> result) {
+		this.result = result;
+		this.resultVars = result.getResultVars();
+	}
+
 	public SingletonRowSet(Row<T> result, Collection<String> resultVars) {
 		this.result = result;
 		this.resultVars = resultVars;

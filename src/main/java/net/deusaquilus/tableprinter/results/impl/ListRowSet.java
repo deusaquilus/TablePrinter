@@ -19,10 +19,23 @@ public class ListRowSet<T> implements RowSet<T> {
 	private Collection<String> resultVars;
 	private Iterator<Row<T>> iterator;
 
+	/**
+	 * Construct a list-based row set. In the case that individual rows do not contain
+	 * all of the required variables, this constructor can be used to manually pass in a superset
+	 * of all the variables contained in all the rows.
+	 * @param results
+	 * @param resultVars
+     */
 	public ListRowSet(List<Row<T>> results, Collection<String> resultVars) {
 		this.results = results;
 		this.iterator = results.iterator();
 		this.resultVars = resultVars;
+	}
+
+	public ListRowSet(List<Row<T>> results) {
+		this.results = results;
+		this.iterator = results.iterator();
+		this.resultVars = results.get(0).getResultVars();
 	}
 
 	/**

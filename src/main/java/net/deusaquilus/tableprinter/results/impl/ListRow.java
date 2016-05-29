@@ -68,4 +68,7 @@ public class ListRow<T> implements Row<T> {
 		return data.iterator();
 	}
 
+	public Collection<String> getResultVars() {
+		return vars;
+	}
 }
