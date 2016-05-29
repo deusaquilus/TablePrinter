@@ -14,13 +14,10 @@ import net.deusaquilus.tableprinter.TablePrinter;
 public interface RowSet<T> extends Iterator<Row<T>> {
 
 	/** Is there a next result?. */
-    public boolean hasNext();
+    boolean hasNext();
 
     /** Moves onto the next result. */
-    public Row<T> next();
-
-    /** Return the "row" number for the current iterator item */
-    public int getRowNumber() ;
+    Row<T> next();
 
     /**
      * Get all of the variables that will be returned in the result set because
@@ -40,5 +37,5 @@ public interface RowSet<T> extends Iterator<Row<T>> {
      *
      * @see Row
      */
-    public Collection<String> getResultVars();
+    Collection<String> getResultVars();
 }

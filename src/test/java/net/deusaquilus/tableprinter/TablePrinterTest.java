@@ -4,8 +4,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import junit.framework.Assert;
+import net.deusaquilus.tableprinter.results.Row;
+import net.deusaquilus.tableprinter.results.impl.ListRow;
 import net.deusaquilus.tableprinter.results.impl.RowSetMem;
 import net.deusaquilus.tableprinter.results.impl.ListRowSet;
 
@@ -28,14 +31,12 @@ public class TablePrinterTest {
 
 	@Test
 	public void testColWidthsMeasurement() {
-		@SuppressWarnings("unchecked")
-		ListRowSet<String> resultSet = new ListRowSet<String>(
+		List<String> vars = Arrays.asList("a", "aa", "aaa");
+		ListRowSet<String> resultSet = ListRowSet.construct(
 				Arrays.asList(
-						Arrays.asList("a", "aa", "aaa"),
-						Arrays.asList("b", "b", "b")
-						),
-						Arrays.asList("1", "2", "3")
-				);
+						new ListRow<String>(Arrays.asList("b", "b", "b"), vars),
+						new ListRow<String>(Arrays.asList("1", "2", "3"), vars)),
+				vars);
 
 		int[] colWidths = TablePrintingUtils.measureColWidths(
 				new RowSetMem<String>(resultSet),
@@ -51,13 +52,12 @@ public class TablePrinterTest {
 	@Test
 	public void testColWidthsMeasurementEmpty2() {
 		@SuppressWarnings("unchecked")
-		ListRowSet<String> resultSet = new ListRowSet<String>(
+		List<String> vars = Arrays.asList("bbbb", "bbbbb", "bbbbbb");
+		ListRowSet<String> resultSet = ListRowSet.construct(
 				Arrays.asList(
-						Arrays.asList("a", "aa", "aaa"),
-						Arrays.asList("bbbb", "bbbbb", "bbbbbb")
-						),
-						Arrays.asList("1", "2", "3")
-				);
+						new ListRow<String>(Arrays.asList("a", "aa", "aaa"), vars),
+						new ListRow<String>(Arrays.asList("1", "2", "3"), vars)
+				), vars);
 
 		int[] colWidths = TablePrintingUtils.measureColWidths(
 				new RowSetMem<String>(resultSet),
@@ -74,13 +74,12 @@ public class TablePrinterTest {
 	@Test
 	public void testColWidthsMeasurementEmpty() {
 		@SuppressWarnings("unchecked")
-		ListRowSet<String> resultSet = new ListRowSet<String>(
+		List<String> vars = Arrays.asList("", "", "");
+		ListRowSet<String> resultSet = ListRowSet.construct(
 				Arrays.asList(
-						Arrays.asList("", "", ""),
-						Arrays.asList("", "", "")
-						),
-						Arrays.asList("", "", "")
-				);
+						new ListRow<String>(Arrays.asList("", "", ""), vars),
+						new ListRow<String>(Arrays.asList("", "", ""), vars)
+				), vars);
 
 		int[] colWidths = TablePrintingUtils.measureColWidths(
 				new RowSetMem<String>(resultSet),
@@ -116,22 +115,26 @@ public class TablePrinterTest {
 		};
 
 		@SuppressWarnings("unchecked")
-		ListRowSet<String> resultSet = new ListRowSet<String>(
+		List<String> vars = Arrays.asList("Col1", "Col2", "Col3");
+		ListRowSet<String> resultSet = ListRowSet.construct(
 				Arrays.asList(
-						Arrays.asList("a", "aa", "aaa"),
-						Arrays.asList("b", "b", "b")
+						new ListRow<String>(Arrays.asList("a", "aa", "aaa"), vars),
+						new ListRow<String>(Arrays.asList("b", "b", "b"), vars)
 						),
-						Arrays.asList("Col1", "Col2", "Col3")
+					vars
 				);
 		TablePrinter<String> tablePrinter = new TablePrinter<String>();
 
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		PrintWriter writer = new PrintWriter(outputStream);
-		tablePrinter.write(writer, resultSet);
+		tablePrinter.writeAll(writer, resultSet);
 		writer.flush();
 
 		assertSame(expectedStringArr, outputStream.toString());
 	}
+
+	// TODO Test for no header printing + with var names longer then data var names
+
 
 
 

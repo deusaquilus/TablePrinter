@@ -15,83 +15,68 @@ public class TablePrinter<T> {
 
     private ValuePrinter<T> valuePrinter = new StringValuePrinter<T>();
 
-
-    /** Textual representation : default layout using " | " to separate columns.
-     *  Ensure the PrintWriter can handle UTF-8.
-     *  OutputStream version is preferred.
-     *  @param pw         A PrintWriter
-     *  @param resultSet  ResultSet
-     */
-    public void format(PrintWriter pw, RowSet<T> resultSet) {
-    	write(pw, resultSet) ;
-    }
+    private int lineWidth;
 
 
-    private RowSetRewindable<T> computeWidthsAndConsumeResults(RowSet<T> resultSet) {
-    	RowSetRewindable<T> rewindableSlice = new RowSetMem<T>(resultSet, config.measuringRows);
+    private RowSetRewindable<T> computeWidthsAndConsumeResults(RowSetRewindable<T> rewindableSlice) {
     	this.colWidths = TablePrintingUtils.measureColWidths(rewindableSlice, config, valuePrinter);
     	rewindableSlice.rewind();
     	return rewindableSlice;
     }
 
+    public void startWriting(PrintWriter pw, RowSet<T> resultSet) {
+        startWritingInternal(pw, resultSet, -1);
+    }
 
-    /** Textual representation : layout using given separator.
-     *  Ensure the PrintWriter can handle UTF-8.
-     *  @param pw         PrintWriter
-     *  @param colSep      Column separator
-     */
-    public void write(PrintWriter pw, RowSet<T> resultSet)
-    {
-        if ( resultSet.getResultVars().size() == 0 )
-        {
-            pw.println("==== No variables ====") ;
+    public void startWritingInternal(PrintWriter pw, RowSet<T> resultSet, int measuringRows) {
+        if ( resultSet.getResultVars().size() == 0 ) {
+            pw.println("==== No Data ====") ;
             return;
         }
 
         // use a section of the result set to compute the column widths
-        RowSetRewindable<T> widthComputedStoredResultSet = this.computeWidthsAndConsumeResults(resultSet);
+        RowSetRewindable<T> rewindableSlice = new RowSetMem<T>(resultSet, measuringRows);
+        RowSetRewindable<T> widthComputedStoredResultSet = this.computeWidthsAndConsumeResults(rewindableSlice);
 
         // create the heading row
         String headingRow[] = TablePrintingUtils.buildHeadingRow(resultSet.getResultVars());
 
         // measure the size of the heading (actually any row will do since we already computed
         // the column widths)
-        int lineWidth = TablePrintingUtils.measureTotalRowWidth(headingRow, colWidths, config);
+        lineWidth = TablePrintingUtils.measureTotalRowWidth(headingRow, colWidths, config);
 
-        TablePrintingUtils.printHeadingRow(pw, headingRow, lineWidth, this.config, this.colWidths);
+        if (this.config.printHeaders) {
+            TablePrintingUtils.printHeadingRow(pw, headingRow, lineWidth, this.config, this.colWidths);
+        }
 
         // print out the results that were computed to calculate the columnd with
         TablePrintingUtils.writeResultSetBody(pw, widthComputedStoredResultSet, this.colWidths, this.valuePrinter, this.config);
+    }
 
+    public void writeSomeMore(PrintWriter pw, RowSet<T> resultSet) {
         // print out the reset of the results
         TablePrintingUtils.writeResultSetBody(pw, resultSet, this.colWidths, this.valuePrinter, this.config);
+    }
 
+    public void finishWriting(PrintWriter pw) {
         for ( int i = 0 ; i < lineWidth ; i++ ) pw.print('-') ;
         pw.println();
     }
 
 
-    protected String printValue(T value) {
-    	return valuePrinter.printValue(value);
+    /** Textual representation : layout using given separator.
+     *  Ensure the PrintWriter can handle UTF-8.
+     *  @param pw         PrintWriter
+     *  @param resultSet      Column separator
+     */
+    public void writeAll(PrintWriter pw, RowSet<T> resultSet) {
+        if ( resultSet.getResultVars().size() == 0 ) {
+            pw.println("==== No Data ====") ;
+            return;
+        }
+
+        startWritingInternal(pw, resultSet, config.measuringRows);
+        writeSomeMore(pw, resultSet);
+        finishWriting(pw);
     }
-
-
-	public ValuePrinter<T> getValuePrinter() {
-		return valuePrinter;
-	}
-
-
-	public void setValuePrinter(ValuePrinter<T> valuePrinter) {
-		this.valuePrinter = valuePrinter;
-	}
-
-
-	public int[] getColWidths() {
-		return colWidths;
-	}
-
-
-	public void setColWidths(int[] colWidths) {
-		this.colWidths = colWidths;
-	}
 }

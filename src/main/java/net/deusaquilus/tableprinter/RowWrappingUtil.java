@@ -18,10 +18,10 @@ public class RowWrappingUtil {
 
 			String value = row[i];
 
-			// write the next slice of the cell
+			// writeAll the next slice of the cell
 			rowSlice[i] = StringUtils.substring(value, 0, rowSize);
 
-			// write the remaining value of the cell (StringUtils will conveniently return ""
+			// writeAll the remaining value of the cell (StringUtils will conveniently return ""
 			// if there's nothing left (or null if the string is empty in the first place)
 			row[i] =  StringUtils.substring(value, rowSize);
 		}

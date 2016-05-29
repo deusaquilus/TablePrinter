@@ -8,7 +8,6 @@ import net.deusaquilus.tableprinter.results.Row;
 import net.deusaquilus.tableprinter.results.RowSet;
 import net.deusaquilus.tableprinter.results.RowSetRewindable;
 import net.deusaquilus.tableprinter.results.impl.ArrayRow;
-import net.deusaquilus.tableprinter.results.impl.SparseRowAdapter;
 
 public class TablePrintingUtils {
 
@@ -27,7 +26,7 @@ public class TablePrintingUtils {
         // allocate a row to fill with results
     	String[] row = new String[resultSet.getResultVars().size()];
 
-    	// allocate a spare row to write wrapped content into
+    	// allocate a spare row to writeAll wrapped content into
     	String[] spareRow = new String[resultSet.getResultVars().size()];
 
     	while (resultSet.hasNext()) {
@@ -70,13 +69,6 @@ public class TablePrintingUtils {
     	return headingRow;
     }
 
-	public static <T> Row<T> makeDense(Row<T> result, Collection<String> allVars) {
-		if (result.isDense()) {
-			return (ArrayRow<T>) result;
-		}
-		return new SparseRowAdapter<T>(result, allVars);
-	}
-
     public static <T> int[] measureColWidths(
     		RowSetRewindable<T> results,
     		TablePrinterConfig config,
@@ -86,13 +78,15 @@ public class TablePrintingUtils {
         int[] colWidths = new int[numCols] ;
 
         // Widths at least that of the variable name.  Assumes we will print col headings.
-        int i = 0;
-        for (String varName : results.getResultVars()) {
-        	if (colWidths[i] < varName.length()) {
-            	colWidths[i] = varName.length() ;
-            }
-        	i++;
-        }
+		if (config.printHeaders) {
+			int i = 0;
+			for (String varName : results.getResultVars()) {
+				if (colWidths[i] < varName.length()) {
+					colWidths[i] = varName.length();
+				}
+				i++;
+			}
+		}
 
         // Preparation pass : find the maximum width for each column
         while(results.hasNext()) {
@@ -165,10 +159,6 @@ public class TablePrintingUtils {
     	for (Iterator<T> t = result.values(); t.hasNext();) {
     		row[i] = valuePrinter.printValue(t.next());
     		i++;
-    	}
-
-    	if (!result.isDense()) {
-    		result = new SparseRowAdapter<T>(result, allVars);
     	}
     }
 

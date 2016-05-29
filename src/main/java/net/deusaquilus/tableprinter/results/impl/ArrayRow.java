@@ -14,7 +14,6 @@ public class ArrayRow<T> implements Row<T>, Iterator<T> {
 	private Collection<String> vars;
 	private int currentIndex = 0;
 
-	@SuppressWarnings("unchecked")
 	public ArrayRow(Row<T> result, Collection<String> allVars) {
 		if (!result.isDense()) {
 			throw new IllegalArgumentException("Dense Array Result interface requires a dense result set, " +

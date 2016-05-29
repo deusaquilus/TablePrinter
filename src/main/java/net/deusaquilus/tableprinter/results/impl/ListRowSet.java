@@ -12,27 +12,34 @@ import net.deusaquilus.tableprinter.results.impl.ListRow;
 
 public class ListRowSet<T> implements RowSet<T> {
 
-	private List<List<T>> results;
+
+
+	private List<Row<T>> results;
 	private Collection<String> resultVars;
-	private Iterator<List<T>> iterator;
-	private int rowNumber;
+	private Iterator<Row<T>> iterator;
 
-	public ListRowSet() {
-	}
-
-	public ListRowSet(List<List<T>> results, Collection<String> resultVars) {
-		setResults(results);
-		setResultVars(resultVars);
-	}
-
-
-	public List<List<T>> getResults() {
-		return results;
-	}
-	public void setResults(List<List<T>> results) {
+	public ListRowSet(List<Row<T>> results, Collection<String> resultVars) {
 		this.results = results;
 		this.iterator = results.iterator();
-		this.rowNumber = 0;
+		this.resultVars = resultVars;
+	}
+
+	/**
+	 * Convenience constructor method that allows covariance i.e. can allow subtypes of Row to be passed in
+	 * directly without casting.
+	 * @param results
+	 * @param resultVars
+	 * @param <T>
+	 * @param <R>
+     * @return
+     */
+	public static <T, R extends Row<T>> ListRowSet<T> construct(List<R> results, Collection<String> resultVars) {
+		return new ListRowSet<T>((List<Row<T>>) results, resultVars);
+	}
+
+
+	public List<Row<T>> getResults() {
+		return results;
 	}
 
 	public void remove() {
@@ -43,21 +50,10 @@ public class ListRowSet<T> implements RowSet<T> {
 		return iterator.hasNext();
 	}
 	public Row<T> next() {
-		List<T> next = iterator.next();
-		this.rowNumber++;
-		return new ListRow<T>(next, resultVars);
-	}
-	public int getRowNumber() {
-		return this.rowNumber;
+		return iterator.next();
 	}
 
 	public Collection<String> getResultVars() {
 		return resultVars;
 	}
-	public void setResultVars(Collection<String> resultVars) {
-		this.resultVars = resultVars;
-	}
-
-
-
 }
