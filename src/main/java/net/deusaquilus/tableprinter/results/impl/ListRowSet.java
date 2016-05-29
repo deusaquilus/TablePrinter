@@ -37,11 +37,6 @@ public class ListRowSet<T> implements RowSet<T> {
 		return new ListRowSet<T>((List<Row<T>>) results, resultVars);
 	}
 
-
-	public List<Row<T>> getResults() {
-		return results;
-	}
-
 	public void remove() {
 		throw new NotImplementedException();
 	}

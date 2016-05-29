@@ -132,10 +132,4 @@ public class TablePrinterTest {
 
 		assertSame(expectedStringArr, outputStream.toString());
 	}
-
-	// TODO Test for no header printing + with var names longer then data var names
-
-
-
-
 }
