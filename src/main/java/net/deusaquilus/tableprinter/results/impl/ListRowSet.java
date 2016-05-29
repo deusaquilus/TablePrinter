@@ -1,5 +1,6 @@
 package net.deusaquilus.tableprinter.results.impl;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -35,6 +36,10 @@ public class ListRowSet<T> implements RowSet<T> {
      */
 	public static <T, R extends Row<T>> ListRowSet<T> construct(List<R> results, Collection<String> resultVars) {
 		return new ListRowSet<T>((List<Row<T>>) results, resultVars);
+	}
+
+	public static <T, R extends Row<T>> ListRowSet<T> construct(Collection<String> resultVars, R... results) {
+		return ListRowSet.construct(Arrays.asList(results), resultVars);
 	}
 
 	public void remove() {

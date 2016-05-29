@@ -1,9 +1,6 @@
 package net.deusaquilus.tableprinter.results.impl;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import net.deusaquilus.tableprinter.results.Row;
 
@@ -29,6 +26,11 @@ public class ListRow<T> implements Row<T> {
 
 	public ListRow(List<T> dataRow, Collection<String> allVars) {
 		this.data = dataRow;
+		this.vars = allVars;
+	}
+
+	public ListRow(Collection<String> allVars, T... data) {
+		this.data = Arrays.asList(data);
 		this.vars = allVars;
 	}
 

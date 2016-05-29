@@ -12,6 +12,7 @@ import net.deusaquilus.tableprinter.results.impl.ListRow;
 import net.deusaquilus.tableprinter.results.impl.RowSetMem;
 import net.deusaquilus.tableprinter.results.impl.ListRowSet;
 
+import net.deusaquilus.tableprinter.results.impl.SingletonRowSet;
 import org.junit.Test;
 
 public class TablePrinterTest {
@@ -128,6 +129,41 @@ public class TablePrinterTest {
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		PrintWriter writer = new PrintWriter(outputStream);
 		tablePrinter.writeAll(writer, resultSet);
+		writer.flush();
+
+		assertSame(expectedStringArr, outputStream.toString());
+	}
+
+	@Test
+	public void testIdiomaticForLoopPrint() {
+
+		String[] expectedStringArr = new String[]{
+				"----------------------",
+				"| Col1 | Col2 | Col3 |",
+				"======================",
+				"| a    | aa   | aaa  |",
+				"| b    | b    | b    |",
+				"| cc   | c    | c    |",
+				"| dd   | d    | d    |",
+				"----------------------"
+		};
+
+		@SuppressWarnings("unchecked")
+		List<String> vars = Arrays.asList("Col1", "Col2", "Col3");
+		ListRowSet<String> resultSet = ListRowSet.construct(
+				vars,
+				new ListRow<String>(vars, "a", "aa", "aaa"),
+				new ListRow<String>(vars, "b", "b", "b"));
+
+		TablePrinter<String> tablePrinter = new TablePrinter<String>();
+
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		PrintWriter writer = new PrintWriter(outputStream);
+
+		tablePrinter.startWriting(writer, resultSet);
+		tablePrinter.writeSomeMore(writer, SingletonRowSet.construct(vars, "cc", "c", "c"));
+		tablePrinter.writeSomeMore(writer, SingletonRowSet.construct(vars, "dd", "d", "d"));
+		tablePrinter.finishWriting(writer);
 		writer.flush();
 
 		assertSame(expectedStringArr, outputStream.toString());
