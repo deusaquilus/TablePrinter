@@ -4,7 +4,6 @@ import java.io.PrintWriter;
 import java.util.Collection;
 import java.util.Iterator;
 
-import com.hp.hpl.jena.reasoner.rulesys.builtins.Print;
 import net.deusaquilus.tableprinter.results.Row;
 import net.deusaquilus.tableprinter.results.RowSet;
 import net.deusaquilus.tableprinter.results.RowSetRewindable;

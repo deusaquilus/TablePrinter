@@ -2,7 +2,6 @@ package net.deusaquilus.tableprinter.results.impl;
 
 import net.deusaquilus.tableprinter.results.Row;
 import net.deusaquilus.tableprinter.results.RowSet;
-import org.apache.commons.lang.NotImplementedException;
 
 import java.util.*;
 
@@ -40,7 +39,7 @@ public class SingletonRowSet<T> implements RowSet<T> {
 	}
 
 	public void remove() {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException();
 	}
 
 	public boolean hasNext() {

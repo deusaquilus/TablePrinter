@@ -6,29 +6,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import junit.framework.Assert;
-import net.deusaquilus.tableprinter.results.Row;
 import net.deusaquilus.tableprinter.results.impl.ListRow;
 import net.deusaquilus.tableprinter.results.impl.RowSetMem;
 import net.deusaquilus.tableprinter.results.impl.ListRowSet;
 
 import net.deusaquilus.tableprinter.results.impl.SingletonRowSet;
+import org.junit.Assert;
 import org.junit.Test;
 
 public class TablePrinterTest {
-
-	private static String combineString(String[] str) {
-		StringBuffer output = new StringBuffer();
-		for (String piece : str) {
-			output.append(piece).append("\n");
-		}
-		return output.toString();
-	}
-
-	public static void assertSame(String[] expected, String actual) {
-		String combinedExpected = combineString(expected);
-		Assert.assertEquals(combinedExpected.trim(), actual.trim());
-	}
 
 	@Test
 	public void testColWidthsMeasurement() {
@@ -115,15 +101,12 @@ public class TablePrinterTest {
 				"----------------------"
 		};
 
-		@SuppressWarnings("unchecked")
 		List<String> vars = Arrays.asList("Col1", "Col2", "Col3");
 		ListRowSet<String> resultSet = ListRowSet.construct(
-				Arrays.asList(
-						new ListRow<String>(Arrays.asList("a", "aa", "aaa"), vars),
-						new ListRow<String>(Arrays.asList("b", "b", "b"), vars)
-						),
-					vars
-				);
+				vars,
+				new ListRow<String>(Arrays.asList("a", "aa", "aaa"), vars),
+				new ListRow<String>(Arrays.asList("b", "b", "b"), vars));
+
 		TablePrinter<String> tablePrinter = new TablePrinter<String>();
 
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -131,7 +114,7 @@ public class TablePrinterTest {
 		tablePrinter.writeAll(writer, resultSet);
 		writer.flush();
 
-		assertSame(expectedStringArr, outputStream.toString());
+		TestUtil.assertSame(expectedStringArr, outputStream.toString());
 	}
 
 	@Test
@@ -165,7 +148,7 @@ public class TablePrinterTest {
 		tablePrinter.finishWriting(writer);
 		writer.flush();
 
-		assertSame(expectedStringArr, outputStream.toString());
+		TestUtil.assertSame(expectedStringArr, outputStream.toString());
 	}
 
 
@@ -203,7 +186,7 @@ public class TablePrinterTest {
 		tablePrinter.finishWriting(writer);
 		writer.flush();
 
-		assertSame(expectedStringArr, outputStream.toString());
+		TestUtil.assertSame(expectedStringArr, outputStream.toString());
 	}
 
 	@Test
@@ -242,7 +225,7 @@ public class TablePrinterTest {
 		tablePrinter.writeAll(writer, resultSet);
 		writer.flush();
 
-		assertSame(expectedStringArr, outputStream.toString());
+		TestUtil.assertSame(expectedStringArr, outputStream.toString());
 	}
 
 	@Test
@@ -277,6 +260,13 @@ public class TablePrinterTest {
 		tablePrinter.writeAll(writer, resultSet);
 		writer.flush();
 
-		assertSame(expectedStringArr, outputStream.toString());
+		TestUtil.assertSame(expectedStringArr, outputStream.toString());
 	}
+
+	// TODO Implement a mock slink that will:
+	// - sink that will wait int he middle of initial measuring with no 'add-more' rows
+	// - sink that will wait in one of the wait-some-more rows
+	// - sink that will wait immediately on the first wait-some-more row
+	// - sink that will wait on the last measuring row
+
 }

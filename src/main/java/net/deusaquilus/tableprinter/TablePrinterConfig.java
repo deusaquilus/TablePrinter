@@ -18,4 +18,5 @@ public class TablePrinterConfig {
 
 	public boolean printHeaders = true;
 	public long asyncSleepTime = 100;
+	public boolean silent = false;
 }

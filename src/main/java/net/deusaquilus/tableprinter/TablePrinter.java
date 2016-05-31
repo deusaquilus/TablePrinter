@@ -3,21 +3,19 @@ package net.deusaquilus.tableprinter;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-import com.sun.tools.javac.util.Name;
 import net.deusaquilus.tableprinter.results.Row;
 import net.deusaquilus.tableprinter.results.RowSet;
 import net.deusaquilus.tableprinter.results.RowSetRewindable;
 import net.deusaquilus.tableprinter.results.impl.ListRowSet;
 import net.deusaquilus.tableprinter.results.impl.RowSetMem;
 import net.deusaquilus.tableprinter.results.impl.SingletonRowSet;
-import org.apache.log4j.Logger;
 
 public class TablePrinter<T> {
 
-    private final Logger logger = Logger.getLogger(TablePrinter.class);
+    private Thread sinkThread;
 
     private int[] colWidths;
 
@@ -26,6 +24,8 @@ public class TablePrinter<T> {
     private ValuePrinter<T> valuePrinter = new StringValuePrinter<T>();
 
     private int lineWidth;
+
+    private AtomicBoolean isOpen = new AtomicBoolean(true);
 
     public TablePrinter() {
     }
@@ -79,18 +79,14 @@ public class TablePrinter<T> {
         pw.println();
     }
 
-    public static interface Sink<T> {
-        boolean isOpen();
-        void push(Row<T> row);
-
-        boolean canPull();
-        Row<T> pull();
+    public Sink<T> openSink(final PrintWriter pw) {
+        return this.openSink(new ConcurrentLinkedQueueSink<T>(), pw);
     }
 
     public Sink<T> openSink(final Sink<T> sink, final PrintWriter pw) {
         final TablePrinter printer = this;
 
-        new Thread(new Runnable() {
+        sinkThread = new Thread(new Runnable() {
             private final int measuringCapacity = config.measuringRows;
             private int rowsMeasured = 0;
             private List<Row<T>> initialRowSet = new ArrayList<Row<T>>();
@@ -108,14 +104,15 @@ public class TablePrinter<T> {
                     // print the initial set of rows, then set it to null
                     printer.startWriting(pw, new ListRowSet(initialRowSet));
                     initialRowSet = null;
-                    return;
+                    // also note that if we got here then there is additional row that got pulled off (in addition
+                    // to these initial ones we have processed), this means that we also have to publish the additional row.
                 }
                 // finally, if we are at this point, we just print out additional rows since we have already measured
                 printer.writeSomeMore(pw, new SingletonRowSet<T>(row));
             }
 
             private void flushIfStillMeasuring() {
-                printer.startWriting(pw, new ListRowSet(initialRowSet));
+                if (initialRowSet != null) printer.startWriting(pw, new ListRowSet(initialRowSet));
             }
 
             public boolean reachedMeasuringCapacity() {
@@ -126,23 +123,50 @@ public class TablePrinter<T> {
                 try {
                     Thread.sleep(printer.config.asyncSleepTime);
                 } catch (InterruptedException e) {
-
+                    if (config.silent) throw new RuntimeException(e);
                 }
             }
 
             public void run() {
-                while(sink.isOpen()) {
+                while(printer.isOpen.get()) {
+                    // TODO Think about doing batching on the sink pull (i.e. the sink should pull a batch of items)
+                    // Also note that moving sleep out of the below while loop wont effectively substitute for a batch pull
+                    // since if we leave it out, the sink.canPull/processRow will run in a loop that is so hot a concurrent
+                    // queue will go into thread context thus letting the latest data off the queue.
                     while(sink.canPull()) {
                         processRow(sink.pull());
                         sleep();
                     }
                 }
-                printer.finishWriting(pw);
+
+                // Need to check again if we have put anything on the thread during the last sleep that happened
+                // (immediately before the printer was marked close) since during this invocation of sleep
+                // immediately before this while, additional items may have been placed on the queue.
+                while(sink.canPull()) {
+                    processRow(sink.pull());
+                }
+
                 flushIfStillMeasuring();
+                // Note that for linewidth to be correct in the first place,
+                // the startWriting method has to be called since the line width obviously
+                // cannot be computed until the column widths are (sto)
+                printer.finishWriting(pw);
                 pw.flush();
             }
         });
+
+        sinkThread.start();
+
         return sink;
+    }
+
+    public void close() {
+        this.isOpen.set(false);
+        try {
+            sinkThread.join();
+        } catch (InterruptedException e) {
+            if (config.silent) throw new RuntimeException(e);
+        }
     }
 
     /** Textual representation : layout using given separator.

@@ -5,8 +5,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.lang.NotImplementedException;
-
 import net.deusaquilus.tableprinter.results.Row;
 import net.deusaquilus.tableprinter.results.RowSet;
 import net.deusaquilus.tableprinter.results.impl.ListRow;
@@ -56,7 +54,7 @@ public class ListRowSet<T> implements RowSet<T> {
 	}
 
 	public void remove() {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException();
 	}
 
 	public boolean hasNext() {

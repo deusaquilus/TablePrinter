@@ -1,7 +1,5 @@
 package net.deusaquilus.tableprinter;
 
-import org.apache.commons.lang.StringUtils;
-
 /**
  * Simple utility wrap a row into multiple lines
  * @author aioffe
@@ -19,11 +17,11 @@ public class RowWrappingUtil {
 			String value = row[i];
 
 			// writeAll the next slice of the cell
-			rowSlice[i] = StringUtils.substring(value, 0, rowSize);
+			rowSlice[i] = Util.substring(value, 0, rowSize);
 
 			// writeAll the remaining value of the cell (StringUtils will conveniently return ""
 			// if there's nothing left (or null if the string is empty in the first place)
-			row[i] =  StringUtils.substring(value, rowSize);
+			row[i] =  Util.substring(value, rowSize);
 		}
 	}
 
@@ -36,5 +34,6 @@ public class RowWrappingUtil {
 		}
 		return false;
 	}
+
 
 }

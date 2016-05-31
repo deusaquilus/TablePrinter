@@ -10,9 +10,6 @@ import net.deusaquilus.tableprinter.results.Row;
 import net.deusaquilus.tableprinter.results.RowSet;
 import net.deusaquilus.tableprinter.results.RowSetRewindable;
 
-import org.apache.commons.lang.NotImplementedException;
-
-
 public class RowSetMem<T> implements RowSetRewindable<T> {
 
 	private List<Row<T>> results;
@@ -85,7 +82,7 @@ public class RowSetMem<T> implements RowSetRewindable<T> {
 	}
 
 	public void remove() {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException();
 	}
 
 	public void rewind() {

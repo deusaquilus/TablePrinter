@@ -6,8 +6,6 @@ import java.util.Iterator;
 
 import net.deusaquilus.tableprinter.results.Row;
 
-import org.apache.commons.lang.NotImplementedException;
-
 public class ArrayRow<T> implements Row<T>, Iterator<T> {
 
 	private T[] data;
@@ -81,7 +79,7 @@ public class ArrayRow<T> implements Row<T>, Iterator<T> {
 	}
 
 	public void remove() {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException();
 	}
 
 	public Collection<String> getResultVars() {
