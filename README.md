@@ -1,6 +1,7 @@
 # Table Printer
 
 Simple table printing utility that allows streaming results. Based on the table printing utility from the Jena Semantic Framework with several additions such as streaming, line wrapping, and writing out results as you go.
+Note that this library has no dependencies and can work with any Java version starting with 6.
 
 ## Usage
 In order to use the TablePrinter you will need some implementation of the parameterized `Row<T>` class, there are several provided.
