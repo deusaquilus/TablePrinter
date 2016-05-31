@@ -3,7 +3,8 @@
 Simple table printing utility that allows streaming results. Based on the table printing utility from the Jena Semantic Framework with several additions such as streaming, line wrapping, and writing out results as you go.
 
 ## Usage
-In order to use the TablePrinter you will need some implementation of the parameterized Row class, there are several provided. Here's an example of how we might setup the data.
+In order to use the TablePrinter you will need some implementation of the parameterized `Row<T>` class, there are several provided.
+Here's an example of how we might setup the data.
 ```java
 Collection<String> headings = Arrays.asList("First Name", "Last Name", "Title");
 ListRowSet<String> data = ListRowSet.construct(
@@ -47,7 +48,7 @@ tablePrinter.close(); // Remember to close the table printer when using a sink
 
 Note that since the Sink interface is very simple it should be possible to implement one using an observeable. A demonstration of how to do this together with map/flatmap is coming soon.
 
-### Hyberid Iterative Method
+### Hybrid Iterative Method
 If you want to write results coming out of a loop and cannot open a new thread, there is still one available option. You can pass a number of initial rows into the TablePrinter using the startWriting to set the correct column measurements and then writeSomeMore method to continue with additional results iteratively.
 ```java
 PrintWriter writer = new PrintWriter(System.out);
@@ -65,7 +66,7 @@ while (dataPipe.hasNext()) {
 }
 tablePrinter.finishWriting(writer);   // Remember to call this to print the final divider
 ```
-Note that you may need to check your data pipe if it has these initial first results and write them into a temporary area so that you will protected against the case where there are zero results.
+Note that you may need to check your data pipe to see if these initial results exist and write them into a temporary area so that you will protected against `NoSuchElementException`s.
 In those kinds of situations (such as if the size of the data set is very small), you should be able to skip the writeSomeMore loop entirely.
 
 
