@@ -44,7 +44,7 @@ public class TablePrinter<T> {
         startWritingInternal(pw, resultSet, -1);
     }
 
-    public void startWritingInternal(PrintWriter pw, RowSet<T> resultSet, int measuringRows) {
+    private void startWritingInternal(PrintWriter pw, RowSet<T> resultSet, int measuringRows) {
         if ( resultSet.getResultVars().size() == 0 ) {
             pw.println("==== No Data ====") ;
             return;
@@ -74,9 +74,15 @@ public class TablePrinter<T> {
         TablePrintingUtils.writeResultSetBody(pw, resultSet, this.colWidths, this.valuePrinter, this.config);
     }
 
+    public void writeSomeMore(PrintWriter pw, Row<T> result) {
+        // print out the reset of the results
+        TablePrintingUtils.writeResultSetBody(pw, new SingletonRowSet<T>(result), this.colWidths, this.valuePrinter, this.config);
+    }
+
     public void finishWriting(PrintWriter pw) {
         for ( int i = 0 ; i < lineWidth ; i++ ) pw.print('-') ;
         pw.println();
+        pw.flush();
     }
 
     public Sink<T> openSink(final PrintWriter pw) {
@@ -183,5 +189,6 @@ public class TablePrinter<T> {
         startWritingInternal(pw, resultSet, config.measuringRows);
         writeSomeMore(pw, resultSet);
         finishWriting(pw);
+        pw.flush();
     }
 }

@@ -53,6 +53,10 @@ public class ListRowSet<T> implements RowSet<T> {
 		return ListRowSet.construct(Arrays.asList(results), resultVars);
 	}
 
+	public static <T, R extends Row<T>> ListRowSet<T> construct(R... results) {
+		return new ListRowSet(Arrays.asList(results));
+	}
+
 	public void remove() {
 		throw new UnsupportedOperationException();
 	}
